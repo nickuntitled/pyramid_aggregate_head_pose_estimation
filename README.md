@@ -69,7 +69,7 @@ python train.py --dataset <dataset name> --data_dir datasets/<dataset name>/ --f
 
 #### DAD-3DHeads
 
-Train on DAD first. (If you don't want to train, you can download pretrained from Google Drive for [EfficientNetV2-S](https://drive.google.com/file/d/17IbejEhOkUQ7UOQaHy_QVDvRDAr5owoI/view?usp=sharing) or [EfficientNetV2-M](https://drive.google.com/file/d/1URZwah8dfOPMuE1Wh4s1Hjg7M_poHuXH/view?usp=sharing).)
+Train on DAD first.
 
 ```
 python train.py --dataset DAD --data_dir datasets/DAD/ --filename_list datasets/DAD/train.json --num_epoch 50 --batch_size 32 --lr 0.00001 --augment 0.5 --flip 1 --output_string DAD --val_dataset AFLW2000 --val_data_dir datasets/AFLW2000 --val_filename_list datasets/AFLW2000/aflw2000_list.txt      
@@ -97,16 +97,29 @@ Test on the desired datasets. How to do.
 
 #### For train by 300W_LP
 
-Test on AFLW2000
+Test on AFLW2000 on the whole snapshot folder
 
 ```
 python test.py --dataset AFLW2000 --val_dataset AFLW2000 --val_data_dir datasets/AFLW2000 --val_filename_list datasets/AFLW2000/aflw2000_list.txt --snapshot <snapshot folder> --num_epoch <no of total epoch like 100> --input_size 224 --crop 0
 ```
 
-Test on BIWI
+Test on AFLW2000 on the specific snapshot file.
+
+```
+python test.py --dataset AFLW2000 --val_dataset AFLW2000 --val_data_dir datasets/AFLW2000 --val_filename_list datasets/AFLW2000/aflw2000_list.txt --snapshot <snapshot path> --input_size 224 --crop 0
+```
+
+
+Test on BIWI on the whole snapshot folder
 
 ```
 python test.py --dataset BIWI --val_dataset BIWI --val_data_dir datasets/BIWI --val_filename_list datasets/BIWI/biwi_list.txt --snapshot <snapshot folder> --num_epoch <no of total epoch like 100> --input_size 240 --crop_size 224 --crop 1
+```
+
+Test on BIWI on the specific snapshot file.
+
+```
+python test.py --dataset BIWI --val_dataset BIWI --val_data_dir datasets/BIWI --val_filename_list datasets/BIWI/biwi_list.txt --snapshot <snapshot path> --input_size 240 --crop_size 224 --crop 1
 ```
 
 #### For train by BIWI
@@ -117,12 +130,8 @@ Test on BIWI
 python test.py --dataset BIWI --val_dataset BIWI --val_data_dir datasets/BIWI --val_filename_list datasets/BIWI/biwi_test_list.txt --snapshot <snapshot folder> --num_epoch <no of total epoch like 100> --input_size 224 --crop_size 224 --crop 0
 ```
 
-## Result
+Test on BIWI
 
-The evaluation results are shown below.
-
-|                                 | yaw  | pitch | roll | mean |
-|---------------------------------|------|-------|------|------|
-| AFLW2000                        | 2.97 | 4.29  | 2.83 | 3.36 |
-| BIWI                            | 3.51 | 4.31  | 2.71 | 3.51 |
-| BIWI train and test (70 and 30) | 2.01 | 2.66  | 1.73 | 2.13 |
+```
+python test.py --dataset BIWI --val_dataset BIWI --val_data_dir datasets/BIWI --val_filename_list datasets/BIWI/biwi_test_list.txt --snapshot <snapshot path> --input_size 224 --crop_size 224 --crop 0
+```

@@ -190,47 +190,67 @@ if __name__ == '__main__':
         pose_dataset = data.BIWI(args.data_dir, None, transformations, mode = 'overall_val') #'test')
 
     snapshot_path = os.path.join(args.snapshot)
+    fileext = snapshot_path.split('.')[-1]
+    
+    if fileext == 'pkl':
+        # EfficientNetV2 structure
+        if args.efficient == 4:
+            network = 'efficientnet_v2_s'
+        elif args.efficient == 3:
+            network = 'efficientnet_v2_m'
+        else:
+            network = 'efficientnet_v2_l'
 
-    total_result = []
-    lowest = { 'epoch': 0, 'value': 0 }
-    try:
-        for epoch in range(args.start, args.num_epoch + 1):
-            console.log(f"Epoch { epoch }")
-            
-            # EfficientNetV2 structure
-            if args.efficient == 4:
-                network = 'efficientnet_v2_s'
-            elif args.efficient == 3:
-                network = 'efficientnet_v2_m'
-            else:
-                network = 'efficientnet_v2_l'
+        model = load_model(pretrained=False, 
+                            network = network)
 
-            model = load_model(pretrained=False, 
-                                network = network)
+        # Load snapshot
+        with console.status("[bold green]Loading snapshot...") as status:
+            saved_state_dict = torch.load(snapshot_path, map_location = f"cuda:{ args.gpu_id }" if args.gpu_id != -1 else "cpu")
+            model.load_state_dict(saved_state_dict['model'] if 'model' in saved_state_dict else saved_state_dict)
 
-            # Load snapshot
-            with console.status("[bold green]Loading snapshot...") as status:
-                saved_state_dict = torch.load(os.path.join(snapshot_path, f"{ str(epoch) }.pkl"), map_location = f"cuda:{ args.gpu_id }" if args.gpu_id != -1 else "cpu")
-                model.load_state_dict(saved_state_dict['model'] if 'model' in saved_state_dict else saved_state_dict)
+        result = test(console, model, pose_dataset)
+    else:
+        total_result = []
+        lowest = { 'epoch': 0, 'value': 0 }
+        try:
+            for epoch in range(args.start, args.num_epoch + 1):
+                console.log(f"Epoch { epoch }")
+                
+                # EfficientNetV2 structure
+                if args.efficient == 4:
+                    network = 'efficientnet_v2_s'
+                elif args.efficient == 3:
+                    network = 'efficientnet_v2_m'
+                else:
+                    network = 'efficientnet_v2_l'
 
-            result = test(console, model, pose_dataset)
-            total_result.append({
-                **result,
-                "epoch": epoch
-            })
+                model = load_model(pretrained=False, 
+                                    network = network)
 
-            mean_error = result['mean_error']
-            if epoch == 1 or epoch == args.start or mean_error < lowest['value']:
-                lowest = {
+                # Load snapshot
+                with console.status("[bold green]Loading snapshot...") as status:
+                    saved_state_dict = torch.load(os.path.join(snapshot_path, f"{ str(epoch) }.pkl"), map_location = f"cuda:{ args.gpu_id }" if args.gpu_id != -1 else "cpu")
+                    model.load_state_dict(saved_state_dict['model'] if 'model' in saved_state_dict else saved_state_dict)
+
+                result = test(console, model, pose_dataset)
+                total_result.append({
                     **result,
-                    "epoch": epoch,
-                    "value": mean_error
-                }
-    except KeyboardInterrupt as e:
-        console.log(f"[*] Bye.")
+                    "epoch": epoch
+                })
 
-    f = open(os.path.join(snapshot_path, f"{ args.dataset }_epoch.json"), "w+")
-    f.write(json.dumps(total_result))
-    f.close()
+                mean_error = result['mean_error']
+                if epoch == 1 or epoch == args.start or mean_error < lowest['value']:
+                    lowest = {
+                        **result,
+                        "epoch": epoch,
+                        "value": mean_error
+                    }
+        except KeyboardInterrupt as e:
+            console.log(f"[*] Bye.")
 
-    print(lowest)
+        f = open(os.path.join(snapshot_path, f"{ args.dataset }_epoch.json"), "w+")
+        f.write(json.dumps(total_result))
+        f.close()
+
+        print(lowest)
