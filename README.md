@@ -2,9 +2,29 @@
 
 ![Architecture](https://i.ibb.co/wWrL7RG/1-Latest-Architecture.jpg)
 
-This repository proposes HPE architecture, being in the landmark-free category. This study aims to build a pyramidal architecture to extract image features at multiple levels of details and then aggregate them to synergize advantages of multi-scale semantic information. The bottom layers contain edges and corners, and the top layers contains abstract features for classification.
+This repository proposes HPE architecture, being in the landmark-free category. This is based on my internship project in NCCU (National Chung Cheng University), Taiwan. This study aims to build a pyramidal architecture to extract image features at multiple levels of details and then aggregate them to synergize advantages of multi-scale semantic information. The bottom layers contain edges and corners, and the top layers contains abstract features for classification.
 
 In addition, our architecture has an objective to increase the attention in spatial and channel levels, which focuses on where and what to pay attention to each aggregated feature map. Hence, the performance of head pose classification and regression is improved by our design. 
+
+## Pyramid Structure
+
+Multi-scale image features (or multi-levels of details) are extracted from a designed pyramid structure after multiple layers of convolution blocks, where the higher layers produce smaller feature maps to response entire objects for abstract characteristics, and the lower layers produce larger feature maps to reveal detailed edges or corners information. As a result, gradual accumulation of pyramidal features synergizes different tasks for HPE improvement. This architecutre is based from EfficientNetV2-S, the CNN backbone, with the first five convolution blocks.
+
+## Pyramid Structure
+
+The first part is Feature Pyramid Aggregation Structure (FPAS). In Figure, FPAS are to acquire and fuse attention features from different levels from top-down and bottom-up. This structure is inspired by the approach of Path Aggregation Feature Pyramid Network (PAFPN) to enhance in-network feature hierarchy, where top-down paths, lateral connections, and bottom-up paths are augmented to propagate different semantic meanings. Then, PAFPN increases the performance on object detection and instance segmentation tasks. 
+
+## Modified ASPP
+
+A modified Atrous Spatial Pyramid Pooling (ASPP) module after FPAS is shown in Fig 1. It is used for channel attention purpose, which is detailed in Fig 3. This part acquires the output of FPAS to process via Atrous convolutions, and the ECA (Effective Channel Attention) modules. 
+
+## Multi-binned classification and regression
+
+The last parts are multi-binned classification regression heads are used to convert the aggregated image features (4x4x256) into Euler angles. For large model size prevention in FC implementation (Fully Connected), a 1x1 GAP layer is applied first  before entering 6 sets of FC layers.
+
+The three sets of FC layers are 10-bin angle classification which is the class of the angle lie in the array [-100, -80, -60, -40, -20, 0, 20, 40, 60, 80], and another three sets of FC layers are 20-bin shifted angle classification which is the addition of the angle from the result of 10-bin angle classification. The addition value starts from 0 to 19. 
+
+---
 
 ## How to prepare
 
@@ -58,6 +78,8 @@ datasets
 ------ annotations
 ------ images
 ```
+
+---
 
 ## How to train
 
@@ -115,6 +137,8 @@ The recommended approach is to transfer the pretrained model from 300W_LP which 
 python train.py --dataset 300W_LP --data_dir datasets/300W_LP/ --filename_list datasets/300W_LP/300wlp_list.txt --num_epoch 100 --batch_size 32 --lr 0.00001 --augment 0.5 --flip 0 --output_string 300W_LP --val_dataset AFLW2000 --val_data_dir datasets/AFLW2000 --val_filename_list datasets/AFLW2000/aflw2000_list.txt --transfer 1 --snapshot <pretrained 300W_LP path>
 ```
 
+---
+
 ## How to evaluate
 
 Test on the desired datasets. How to do.
@@ -160,7 +184,9 @@ Test on BIWI
 python test.py --dataset BIWI --val_dataset BIWI --val_data_dir datasets/BIWI --val_filename_list datasets/BIWI/biwi_test_list.txt --snapshot <snapshot path> --input_size 224 --crop_size 224 --crop 0
 ```
 
-#### The result
+---
+
+## The result
 
 To evaluate to be similar to the result, train by DAD-3DHeads first. Then, apply the pretrained model on DAD-3DHeads to be trained by 300W_LP.
 
