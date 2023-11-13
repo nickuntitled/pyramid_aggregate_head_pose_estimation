@@ -67,9 +67,21 @@ Train by using command below:
 python train.py --dataset <dataset name> --data_dir datasets/<dataset name>/ --filename_list datasets/<dataset name>/<filename list> --num_epoch <number of epochs> --batch_size <no of epochs> --output_string <desired output> --batch_size <batch_size>
 ```
 
+If you want to make a transfer learning, you have to type like this below.
+
+```
+python train.py --dataset <dataset name> --data_dir datasets/<dataset name>/ --filename_list datasets/<dataset name>/<filename list> --num_epoch <number of epochs> --batch_size <no of epochs> --output_string <desired output> --batch_size <batch_size> --transfer 1 --snapshot <snapshot path>
+```
+
+If you want to continue training, you have to type like this below.
+
+```
+python train.py --dataset <dataset name> --data_dir datasets/<dataset name>/ --filename_list datasets/<dataset name>/<filename list> --num_epoch <number of epochs> --batch_size <no of epochs> --output_string <desired output> --batch_size <batch_size> --transfer 0 --snapshot <snapshot path>
+```
+
 #### DAD-3DHeads
 
-Train on DAD first.
+Train on DAD first. If you do not want to train, you can download the [pretrained model](https://drive.google.com/file/d/1BiDf62gjkffXQYg2HgLisMsfldEXX49P/view?usp=sharing).
 
 ```
 python train.py --dataset DAD --data_dir datasets/DAD/ --filename_list datasets/DAD/train.json --num_epoch 50 --batch_size 32 --lr 0.00001 --augment 0.5 --flip 1 --output_string DAD --val_dataset AFLW2000 --val_data_dir datasets/AFLW2000 --val_filename_list datasets/AFLW2000/aflw2000_list.txt      
@@ -83,12 +95,24 @@ Train on 300W_LP.
 python train.py --dataset 300W_LP --data_dir datasets/300W_LP/ --filename_list datasets/300W_LP/300wlp_list.txt --num_epoch 100 --batch_size 32 --lr 0.00001 --augment 0.5 --flip 0 --output_string 300W_LP --val_dataset AFLW2000 --val_data_dir datasets/AFLW2000 --val_filename_list datasets/AFLW2000/aflw2000_list.txt               
 ```
 
+The recommended approach is to transfer the pretrained model from DAD-3DHeads.
+
+```
+python train.py --dataset 300W_LP --data_dir datasets/300W_LP/ --filename_list datasets/300W_LP/300wlp_list.txt --num_epoch 100 --batch_size 32 --lr 0.00001 --augment 0.5 --flip 0 --output_string 300W_LP --val_dataset AFLW2000 --val_data_dir datasets/AFLW2000 --val_filename_list datasets/AFLW2000/aflw2000_list.txt --transfer 1 --snapshot <pretrained DAD-3DHeads path>
+```
+
 #### BIWI
 
 Train on BIWI.
 
 ```
 python train.py --dataset BIWI --data_dir datasets/BIWI/ --filename_list datasets/BIWI/biwi_train_list.txt --num_epoch 100 --batch_size 32 --lr 0.00001 --augment 0.5 --flip 1 --output_string BIWI --val_dataset BIWI --val_data_dir datasets/BIWI --val_filename_list datasets/BIWI/biwi_test_list.txt     
+```
+
+The recommended approach is to transfer the pretrained model from 300W_LP which is fine-tune for BIWI.
+
+```
+python train.py --dataset 300W_LP --data_dir datasets/300W_LP/ --filename_list datasets/300W_LP/300wlp_list.txt --num_epoch 100 --batch_size 32 --lr 0.00001 --augment 0.5 --flip 0 --output_string 300W_LP --val_dataset AFLW2000 --val_data_dir datasets/AFLW2000 --val_filename_list datasets/AFLW2000/aflw2000_list.txt --transfer 1 --snapshot <pretrained 300W_LP path>
 ```
 
 ## How to evaluate
@@ -135,3 +159,14 @@ Test on BIWI
 ```
 python test.py --dataset BIWI --val_dataset BIWI --val_data_dir datasets/BIWI --val_filename_list datasets/BIWI/biwi_test_list.txt --snapshot <snapshot path> --input_size 224 --crop_size 224 --crop 0
 ```
+
+#### The result
+
+To evaluate to be similar to the result, train by DAD-3DHeads first. Then, apply the pretrained model on DAD-3DHeads to be trained by 300W_LP.
+
+The pretrained is avilable from Google Drive. The links are provided in the table.
+
+| Angle      | Yaw         | Pitch       | Roll        | Mean        | Link        |
+| ---------- | ----------- | ----------- | ----------- | ----------- | ----------- |
+| AFLW2000   | 2.84        | 4.11        | 3.00        | 3.42        | [Download](https://drive.google.com/file/d/1Bw0A0PLcvcmkpfC0H_zhEFJ6ukbX4Mm2/view?usp=sharing)    |
+| BIWI       | 4.09        | 3.82        | 2.79        | 3.57        | [Download](https://drive.google.com/file/d/1wt5Qn-87-PBXNs5gIuqQ-XEqPECWTm8s/view?usp=sharing)    |
