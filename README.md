@@ -2,23 +2,29 @@
 
 ![Architecture](https://i.ibb.co/wWrL7RG/1-Latest-Architecture.jpg)
 
-This repository proposes HPE architecture, being in the landmark-free category. This is based on my internship project in NCCU (National Chung Cheng University), Taiwan. This study aims to build a pyramidal architecture to extract image features at multiple levels of details and then aggregate them to synergize advantages of multi-scale semantic information. The bottom layers contain edges and corners, and the top layers contains abstract features for classification.
+This repository proposes landmark-free HPE method. This is based on my internship project in NCCU (National Chung Cheng University), Taiwan. This study aims to build a pyramidal architecture to extract multi-level image features and then aggregate them to synergize advantages of multi-scale semantic information. The bottom layers contain edges and corners, and the top layers contains abstract features for classification.
 
 In addition, our architecture has an objective to increase the attention in spatial and channel levels, which focuses on where and what to pay attention to each aggregated feature map. Hence, the performance of head pose classification and regression is improved by our design. 
 
-## Pyramid Structure
+## Pyramidal structure
 
 Multi-scale image features (or multi-levels of details) are extracted from a designed pyramid structure after multiple layers of convolution blocks, where the higher layers produce smaller feature maps to response entire objects for abstract characteristics, and the lower layers produce larger feature maps to reveal detailed edges or corners information. As a result, gradual accumulation of pyramidal features synergizes different tasks for HPE improvement. This architecutre is based from EfficientNetV2-S, the CNN backbone, with the first five convolution blocks.
 
-## Pyramid Structure
+## Feature Pyramid Aggregation Structure
+
+![FPAS](https://i.ibb.co/cv15Szv/FPAS.jpg)
 
 The first part is Feature Pyramid Aggregation Structure (FPAS). In Figure, FPAS are to acquire and fuse attention features from different levels from top-down and bottom-up. This structure is inspired by the approach of Path Aggregation Feature Pyramid Network (PAFPN) to enhance in-network feature hierarchy, where top-down paths, lateral connections, and bottom-up paths are augmented to propagate different semantic meanings. Then, PAFPN increases the performance on object detection and instance segmentation tasks. 
 
 ## Modified ASPP
 
-A modified Atrous Spatial Pyramid Pooling (ASPP) module after FPAS is shown in Fig 1. It is used for channel attention purpose, which is detailed in Fig 3. This part acquires the output of FPAS to process via Atrous convolutions, and the ECA (Effective Channel Attention) modules. 
+![Modified ASPP](https://i.ibb.co/5GfBWsw/Modified-ASPP-Structure.jpg)
+
+A modified Atrous Spatial Pyramid Pooling (ASPP) module after FPAS is shown in the first figure. It is used for channel attention purpose, which is detailed in the above figure. This part acquires the output of FPAS to process via Atrous convolutions, and the ECA (Effective Channel Attention) modules. 
 
 ## Multi-binned classification and regression
+
+![Multi-binned Classification and Regression](https://i.ibb.co/Mk3jQdZ/bin-classification-and-regression.jpg)
 
 The last parts are multi-binned classification regression heads are used to convert the aggregated image features (4x4x256) into Euler angles. For large model size prevention in FC implementation (Fully Connected), a 1x1 GAP layer is applied first  before entering 6 sets of FC layers.
 
