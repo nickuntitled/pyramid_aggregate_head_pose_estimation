@@ -196,7 +196,7 @@ python test.py --dataset BIWI --val_dataset BIWI --val_data_dir datasets/BIWI --
 
 To evaluate to be similar to the result, train by DAD-3DHeads first. Then, apply the pretrained model on DAD-3DHeads to be trained by 300W_LP.
 
-The pretrained is avilable from Google Drive. The links are provided in the table.
+The pretrained is available from Google Drive. The links are provided in the table.
 
 | Angle      | Yaw         | Pitch       | Roll        | Mean        | Link        |
 | ---------- | ----------- | ----------- | ----------- | ----------- | ----------- |
