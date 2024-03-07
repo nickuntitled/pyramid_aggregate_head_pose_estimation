@@ -1,3 +1,6 @@
+# The code is based on hankyul2's EfficientNet-V2.
+# This is from the repository.
+# https://github.com/hankyul2/EfficientNetV2-pytorch
 import copy
 from functools import partial
 from collections import OrderedDict

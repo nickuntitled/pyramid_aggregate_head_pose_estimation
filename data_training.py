@@ -7,6 +7,8 @@ from torchvision import transforms
 import albumentations as A
 from scipy.spatial.transform.rotation import Rotation
 
+# This function is based on Ruiz's HopeNEt
+# https://github.com/natanielruiz/deep-head-pose
 def get_list_from_filenames(file_path):
     # input:    relative path to .txt file with file names
     # output:   list of relative path names

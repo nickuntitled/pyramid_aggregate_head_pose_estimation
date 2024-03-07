@@ -1,7 +1,10 @@
+# The code is based on Ruiz's HopeNet.
+# This is from the repository.
+# https://github.com/natanielruiz/deep-head-pose
 import os, torch, cv2
 import numpy as np
 from torch.utils.data.dataset import Dataset
-from PIL import Image, ImageFilter, ImageOps
+from PIL import Image
 import utils
 
 def get_list_from_filenames(file_path):
@@ -50,7 +53,7 @@ class AFLW2000(Dataset):
         x_max = max(pt2d[0, :])
         y_max = max(pt2d[1, :])
 
-        k = ad = self.ad
+        k = self.ad
         x_min -= 0.6 * k * abs(x_max - x_min)
         y_min -= 2 * k * abs(y_max - y_min)
         x_max += 0.6 * k * abs(x_max - x_min)
@@ -96,7 +99,6 @@ class BIWI_kinect(Dataset):
         img = np.uint8(data['image'])
         img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
         img = img.convert(self.image_mode)
-        #img = img.filter(ImageFilter.UnsharpMask(radius = 3, percent = 200, threshold = 5))
         
         yaw, pitch, roll = data['pose']
         cont_labels = torch.FloatTensor([yaw, pitch, roll])

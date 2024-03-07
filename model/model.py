@@ -53,26 +53,6 @@ class ASPPConv(nn.Module):
         # Combine with Channel Attention
         out = out * bypass.expand_as(out)
         return out
-    
-class ECA_Module(nn.Module):
-    def __init__(self, out_channels):
-        super().__init__()
-        
-        k_size = 3
-        self.avgpool = nn.AdaptiveAvgPool2d((1,1))
-        self.adjust_module = nn.Conv2d(out_channels, out_channels, kernel_size=1, bias=False) 
-        self.bypass_module = nn.Conv1d(1, 1, kernel_size=k_size, padding=(k_size - 1) // 2, bias=False) 
-        self.sigmoid = nn.Sigmoid()
-
-    def forward(self, out):
-        bypass = self.avgpool(out)
-        bypass = self.adjust_module(bypass)
-        bypass = self.bypass_module(bypass.squeeze(-1).transpose(-1, -2)).transpose(-1, -2).unsqueeze(-1)
-        bypass = self.sigmoid(bypass)
-
-        # Combine with Channel Attention
-        out = out * bypass.expand_as(out)
-        return out
 
 class ASPPPooling(nn.Sequential):
     def __init__(self, in_channels, out_channels) -> None:

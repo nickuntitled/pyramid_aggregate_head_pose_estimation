@@ -13,8 +13,6 @@ import data as validate_data
 import data_training as data
 from model import load_model
 
-import utils
-
 def parse_args():
     """Parse input arguments."""
     parser = argparse.ArgumentParser(description='Head pose estimation using the EfficientNetV2-based network.')
